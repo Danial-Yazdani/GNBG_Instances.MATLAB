@@ -6,13 +6,13 @@ This repository contains the MATLAB source code for a series of predefined probl
 Full description of GNBG can be found in "D. Yazdani, M. N. Omidvar, D. Yazdani, K. Deb, and A. H. Gandomi, "GNBG: A Generalized and Configurable Benchmark Generator for Continuous Numerical Optimization," arXiv prepring arXiv:2312.07083, 2023."
 
 
-Key Features:
+***Key Features:***
 
 The code is structured to work with pre-saved parameter settings for 24 distinct GNBG-generated problem instances (f1 to f24).
 
 Differential Evolution (DE) serves as an example optimizer to illustrate the application of these problem instances in optimization scenarios.
 
-Important Note:
+***Important Note:***
 
 The actual GNBG generator code, which is essential for creating and manipulating various problem instances, is not included in this repository. It can be accessed separately at https://github.com/Danial-Yazdani/GNBG-Generator
 
