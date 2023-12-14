@@ -1,6 +1,6 @@
 %***********************************GNBG***********************************
 %Author: Danial Yazdani
-%Last Edited: November 15, 2023
+%Last Edited: December 14, 2023
 %Title: Generalized Numerical Benchmark Generator (GNBG)
 % --------
 %Description: 
@@ -14,14 +14,13 @@
 % generator file and only uses the saved configurations of the instances.
 % --------
 %Refrence: 
-%           D. Yazdani, M. N. Omidvar, K. Deb, and A. H. Gandomi, "GNBG: A Generalized
-%           and Configurable Benchmark Generator for Continuous Numerical Optimization," 2023.
+%           D. Yazdani, M. N. Omidvar, D. Yazdani, K. Deb, and A. H. Gandomi, "GNBG: A Generalized
+%           and Configurable Benchmark Generator for Continuous Numerical Optimization," arXiv prepring	arXiv:2312.07083, 2023.
 % 
 %           AND
 % 
-%          A. H. Gandomi, D. Yazdani, M. N. Omidvar, and K. Deb,
-%          "GNBG-Generated Test Suite for Box-Constrained Numerical Global
-%          Optimization," 2023.
+%          A. H. Gandomi, D. Yazdani, M. N. Omidvar, and K. Deb, "GNBG-Generated Test Suite for Box-Constrained Numerical Global
+%          Optimization," arXiv preprint arXiv:2312.07034, 2023.
 %
 %If you are using GNBG and this code in your work, you should cite the references provided above.    
 % --------
