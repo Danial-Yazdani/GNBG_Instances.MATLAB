@@ -1,11 +1,11 @@
 import os
 import numpy as np
 from scipy.io import loadmat
-import random
+from scipy.optimize import differential_evolution
 
 
 class GNBG:
-    def __init__(self, MaxEvals, AcceptanceThreshold, Dimension, CompNum, MinCoordinate, MaxCoordinate, CompMinPos, CompSigma, CompH, Mu, Omega, Lambda, RotationMatrix, OptimumValue, OptimumPosition, FEhistory, FE, AcceptanceReachPoint, BestFoundResult):
+    def __init__(self, MaxEvals, AcceptanceThreshold, Dimension, CompNum, MinCoordinate, MaxCoordinate, CompMinPos, CompSigma, CompH, Mu, Omega, Lambda, RotationMatrix, OptimumValue, OptimumPosition):
         self.MaxEvals = MaxEvals
         self.AcceptanceThreshold = AcceptanceThreshold
         self.Dimension = Dimension
@@ -21,30 +21,28 @@ class GNBG:
         self.RotationMatrix = RotationMatrix
         self.OptimumValue = OptimumValue
         self.OptimumPosition = OptimumPosition
-        self.FEhistory = FEhistory
-        self.FE = FE
-        self.AcceptanceReachPoint = AcceptanceReachPoint
-        self.BestFoundResult = BestFoundResult
+        self.FEhistory = np.nan * np.ones(self.MaxEvals)
+        self.FE = 0
+        self.AcceptanceReachPoint = np.inf
+        self.BestFoundResult = np.inf
 
-    def fitness(self, X):
-        SolutionNumber = X.shape[0]
-        result = np.nan * np.ones(SolutionNumber)
-        for jj in range(SolutionNumber):
-            x = X[jj, :].reshape(-1, 1)  # Ensure column vector
-            f = np.nan * np.ones(self.o)
-            for k in range(self.o):
-                a = self.transform((x - self.Component_MinimumPosition[k, :].reshape(-1, 1)).T @ self.RotationMatrix[:, :, k].T, self.Mu[k, :], self.Omega[k, :])
-                b = self.transform(self.RotationMatrix[:, :, k] @ (x - self.Component_MinimumPosition[k, :].reshape(-1, 1)), self.Mu[k, :], self.Omega[k, :])
-                f[k] = self.ComponentSigma[k] + (a @ np.diag(self.Component_H[k, :]) @ b) ** self.lambda_[k]
-            result[jj] = np.min(f)
-            if self.FE > self.MaxEvals:
-                return result
-            self.FE += 1
-            self.FEhistory[self.FE] = result[jj]
-            if self.BestFoundResult > result[jj]:
-                self.BestFoundResult = result[jj]
-            if abs(self.FEhistory[self.FE] - self.OptimumValue) < self.AcceptanceThreshold and np.isinf(self.AcceptanceReachPoint):
-                self.AcceptanceReachPoint = self.FE
+    def fitness(self, x):
+        x=x.reshape(-1, 1)
+        result = np.nan
+        f = np.nan * np.ones(self.CompNum)
+        for k in range(self.CompNum):
+            a = self.transform((x - self.CompMinPos[k, :].reshape(-1, 1)).T @ self.RotationMatrix[:, :, k].T, self.Mu[k, :], self.Omega[k, :])
+            b = self.transform(self.RotationMatrix[:, :, k] @ (x - self.CompMinPos[k, :].reshape(-1, 1)), self.Mu[k, :], self.Omega[k, :])
+            f[k] = self.CompSigma[k] + (a @ np.diag(self.CompH[k, :]) @ b) ** self.Lambda[k]
+        result = np.min(f)
+        if self.FE > (self.MaxEvals-1):
+            return result
+        self.FE += 1
+        self.FEhistory[self.FE-1] = result
+        if self.BestFoundResult > result:
+            self.BestFoundResult = result
+        if abs(self.FEhistory[self.FE-1] - self.OptimumValue) < self.AcceptanceThreshold and np.isinf(self.AcceptanceReachPoint):
+            self.AcceptanceReachPoint = self.FE
         return result
 
     def transform(self, X, Alpha, Beta):
@@ -65,7 +63,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 folder_path = os.path.join(current_dir)
 
 # Initialization
-RunNumber = 5
+RunNumber = 1
 AcceptancePoints = np.full(RunNumber, np.nan)
 Error = np.full(RunNumber, np.nan)
 ProblemIndex = 22  # Choose a problem instance range from f1 to f24
@@ -96,17 +94,16 @@ for RunCounter in range(1, RunNumber + 1):
         RotationMatrix = np.array(GNBG_tmp['RotationMatrix'][0, 0])
         OptimumValue = np.array([item[0] for item in GNBG_tmp['OptimumValue'].flatten()])[0, 0]
         OptimumPosition = np.array(GNBG_tmp['OptimumPosition'][0, 0])
-        FEhistory = np.array(GNBG_tmp['FEhistory'][0, 0])
-        FE = np.array([item[0] for item in GNBG_tmp['FE'].flatten()], dtype=np.int64)[0, 0]
-        AcceptanceReachPoint = np.array([item[0] for item in GNBG_tmp['AcceptanceReachPoint'].flatten()])[0, 0]
-        BestFoundResult = np.array([item[0] for item in GNBG_tmp['BestFoundResult'].flatten()])[0, 0]
 
     else:
         raise ValueError('ProblemIndex must be between 1 and 24.')
 
-    gnbg = GNBG(MaxEvals, AcceptanceThreshold, Dimension, CompNum, MinCoordinate, MaxCoordinate, CompMinPos, CompSigma, CompH, Mu, Omega, Lambda, RotationMatrix, OptimumValue, OptimumPosition, FEhistory, FE, AcceptanceReachPoint, BestFoundResult)
+    # Create an instance of the GNBG class
+    gnbg = GNBG(MaxEvals, AcceptanceThreshold, Dimension, CompNum, MinCoordinate, MaxCoordinate, CompMinPos, CompSigma, CompH, Mu, Omega, Lambda, RotationMatrix, OptimumValue, OptimumPosition)
 
     # Set a random seed for the optimizer
     np.random.seed()  # This uses a system-based source to seed the random number generator
-    X = np.random.rand(5, 30)
-    result = gnbg.fitness(X)
+    # Perform differential evolution optimization using the GNBG fitness function
+    PopulatioSize=100
+    maxIteration = round(MaxEvals / PopulatioSize)
+    result = differential_evolution(gnbg.fitness, bounds=[(MinCoordinate, MaxCoordinate)] * Dimension, popsize=PopulatioSize, strategy='best2bin', maxiter=maxIteration)
