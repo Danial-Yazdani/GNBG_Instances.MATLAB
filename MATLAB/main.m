@@ -35,7 +35,7 @@ close all;clear all;clc;%#ok<CLALL>
 RunNumber = 5;
 Error = NaN(1,RunNumber);
 AcceptancePoints = NaN(1,RunNumber);
-ProblemIndex = 22;% Choose a problem instance range from f1 to f24
+ProblemIndex = 20;% Choose a problem instance range from f1 to f24
 for RunCounter=1 : RunNumber
     disp(['RunCounter=', num2str(RunCounter)]);
     %% Preparation and loading of the GNBG parameters based on the chosen problem instance
