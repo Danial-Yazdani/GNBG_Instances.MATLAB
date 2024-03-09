@@ -14,7 +14,7 @@ Differential Evolution (DE) serves as an example optimizer to illustrate the app
 
 ***Important Note:***
 
-The actual GNBG generator code, which is essential for creating and manipulating various problem instances, is not included in this repository. It can be accessed separately at https://github.com/Danial-Yazdani/GNBG_Instances.MATLAB
+The actual GNBG generator code, which is essential for creating and manipulating various problem instances, is not included in this repository. It can be accessed separately at https://github.com/Danial-Yazdani/GNBG_Generator.MATLAB
 
 
 ***Related Source Codes:***
